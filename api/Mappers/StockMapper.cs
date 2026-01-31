@@ -2,11 +2,13 @@ using api.Dtos;
 using api.models;
 
 namespace api.Mappers;
+
 public static class StockMapper
 {
   public static StockDto ToStockDto(this Stock stock)
   {
-    return new StockDto{
+    return new StockDto
+    {
       Id = stock.Id,
       Symbol = stock.Symbol,
       CompanyName = stock.CompanyName,
@@ -15,11 +17,12 @@ public static class StockMapper
       Industry = stock.Industry,
       MarketCap = stock.MarketCap
     };
-  } 
+  }
 
- public static Stock ToStockDtoFromCreateDto(this CreateDto createDto)
+  public static Stock ToStockDtoFromCreateDto(this CreateDto createDto)
   {
-    return new Stock{
+    return new Stock
+    {
       Symbol = createDto.Symbol,
       CompanyName = createDto.CompanyName,
       Purchase = createDto.Purchase,
@@ -28,4 +31,6 @@ public static class StockMapper
       MarketCap = createDto.MarketCap
     };
   }
+
+
 }

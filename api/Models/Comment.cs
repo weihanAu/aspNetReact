@@ -7,6 +7,7 @@ namespace api.models
       public string content { get; set; } = string.Empty;
       public DateTime createdAt { get; set; } = DateTime.Now;
       public int? stockId { get; set; }
+      // Navigation property
       public Stock? stock { get; set; }
     }
 }

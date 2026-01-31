@@ -1,4 +1,5 @@
 
+using api.data;
 using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+//Dependency Injection for Repository
+builder.Services.AddScoped<api.Interface.IStockRepository, api.Repository.StockRepository>();
+builder.Services.AddScoped<api.Interface.ICommentRepository, api.Repository.CommentRepository>();
 
 var app = builder.Build();
 
