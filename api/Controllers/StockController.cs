@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using api.data;
 using api.Interface;
+using api.Helper;
+using Microsoft.IdentityModel.Tokens;
 namespace api.Controllers
 {
   [Route("api/[controller]")]
@@ -19,9 +21,19 @@ namespace api.Controllers
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] QuerySearch querySearch)
     {
-      var stockDto = await _stockRepository.GetAllStocksAsync();
+      if (!string.IsNullOrEmpty(querySearch.CompanyName))
+      {
+        var allStocks = await _stockRepository.GetAllStocksAsync(x=> x.CompanyName!.ToLower().Contains(querySearch.CompanyName!.ToLower()));
+        return Ok(allStocks);
+      }
+      if(!string.IsNullOrEmpty(querySearch.Symbol))
+      {
+        var allStocks = await _stockRepository.GetAllStocksAsync(x=> x.Symbol!.ToLower().Contains(querySearch.Symbol!.ToLower()));
+        return Ok(allStocks);
+      }
+      var stockDto = await _stockRepository.GetAllStocksAsync(pageNumber: querySearch.pageNumber);
       return Ok(stockDto);
     }
 

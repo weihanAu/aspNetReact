@@ -8,6 +8,7 @@ using api.data;
 using Microsoft.EntityFrameworkCore;
 using api.Dtos;
 using api.Dtos.Comment;
+using System.Linq.Expressions;
 
 public class StockRepository : IStockRepository
 {
@@ -35,10 +36,22 @@ public class StockRepository : IStockRepository
     await _context.SaveChangesAsync();
     return stockModel;
   }
-
-  public Task<List<StockDto>> GetAllStocksAsync()
+  //modified to accept optional expression callback for filtering
+  public async Task<List<StockDto>> GetAllStocksAsync(Expression<Func<Stock, bool>>? callback = null, int pageNumber = 1)
   {
-    return _context.Stocks.Select(s => new StockDto
+    // 1. 开启 Queryable “生成器”，此时没有任何数据库操作
+    var query = _context.Stocks.AsQueryable();
+
+    // 2. 动态叠加过滤条件
+    // 如果调用者传了条件（比如 s => s.Symbol == "AAPL"），就拼接到 SQL 的 WHERE 子句中
+    if (callback != null)
+    {
+      query = query.Where(callback);
+    }
+    int skipNumber = (pageNumber - 1) * 1;
+    // 3. 统一执行 Select 投影和最后的异步转换
+    // 注意：所有的逻辑会在这一步被翻译成一条高效的 SQL 发送给数据库
+    return await query.Select(s => new StockDto
     {
       Id = s.Id,
       Symbol = s.Symbol,
@@ -46,7 +59,6 @@ public class StockRepository : IStockRepository
       Purchase = s.Purchase,
       LastDiv = s.LastDiv,
       MarketCap = s.MarketCap,
-      //using DTO to avoid loop reference issue
       comments = s.Comments.Select(c => new CommentDto
       {
         Id = c.Id,
@@ -55,7 +67,7 @@ public class StockRepository : IStockRepository
         createdAt = c.createdAt,
         stockId = c.stockId
       }).ToList(),
-    }).ToListAsync();
+    }).Skip(skipNumber).Take(1).ToListAsync();
   }
 
   public Task<Stock?> GetStockByIdAsync(int id)

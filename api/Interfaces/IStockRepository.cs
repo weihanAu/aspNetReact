@@ -4,10 +4,11 @@ namespace api.Interface;
 
 using api.Dtos;
 using api.data;
+using System.Linq.Expressions;
 
 public interface IStockRepository
 {
-  Task<List<StockDto>> GetAllStocksAsync();
+  Task<List<StockDto>> GetAllStocksAsync(Expression<Func<Stock, bool>>? callback = null,int pageNumber=1);
   Task<Stock?> GetStockByIdAsync(int id);
 
   Task<Stock> AddStockAsync(Stock stockModel);
