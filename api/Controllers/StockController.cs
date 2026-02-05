@@ -7,6 +7,7 @@ using api.data;
 using api.Interface;
 using api.Helper;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 namespace api.Controllers
 {
   [Route("api/[controller]")]
@@ -20,7 +21,7 @@ namespace api.Controllers
       _stockRepository = stockRepository;
     }
 
-    [HttpGet]
+    [HttpGet][Authorize]
     public async Task<IActionResult> GetAll([FromQuery] QuerySearch querySearch)
     {
       if (!string.IsNullOrEmpty(querySearch.CompanyName))

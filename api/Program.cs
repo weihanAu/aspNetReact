@@ -57,6 +57,9 @@ builder.Services.AddAuthentication(options =>
 //Dependency Injection for Repository
 builder.Services.AddScoped<api.Interface.IStockRepository, api.Repository.StockRepository>();
 builder.Services.AddScoped<api.Interface.ICommentRepository, api.Repository.CommentRepository>();
+builder.Services.AddScoped<api.Interfaces.ITokenService, api.Services.TokenServices>();
+//enable swagger jwt
+builder.Services.AddSwaggerGen(api.Tools.SwaggerTools.EnableSwaggerJwt());
 
 
 var app = builder.Build();

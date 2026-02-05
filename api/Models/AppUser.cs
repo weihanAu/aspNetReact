@@ -4,6 +4,6 @@ namespace api.models
 {
     public class AppUser : IdentityUser
     {
-        // Additional properties can be added here
+        public List<Portfolio> Portfolios { get; set; } = new List<Portfolio>();
     }
 }
