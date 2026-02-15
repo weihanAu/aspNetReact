@@ -8,6 +8,7 @@ using api.Interface;
 using api.Helper;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
+using api.Interfaces.IServices;
 namespace api.Controllers
 {
   [Route("api/[controller]")]
@@ -16,26 +17,19 @@ namespace api.Controllers
   {
  
     private readonly IStockRepository _stockRepository;
-    public StockController(IStockRepository stockRepository)
+    private readonly IStockService _stockService;
+    public StockController(IStockRepository stockRepository,IStockService stockService)
     {
       _stockRepository = stockRepository;
+      _stockService = stockService;
     }
 
-    [HttpGet][Authorize]
+    [HttpGet]
+    // [Authorize]
     public async Task<IActionResult> GetAll([FromQuery] QuerySearch querySearch)
     {
-      if (!string.IsNullOrEmpty(querySearch.CompanyName))
-      {
-        var allStocks = await _stockRepository.GetAllStocksAsync(x=> x.CompanyName!.ToLower().Contains(querySearch.CompanyName!.ToLower()));
-        return Ok(allStocks);
-      }
-      if(!string.IsNullOrEmpty(querySearch.Symbol))
-      {
-        var allStocks = await _stockRepository.GetAllStocksAsync(x=> x.Symbol!.ToLower().Contains(querySearch.Symbol!.ToLower()));
-        return Ok(allStocks);
-      }
-      var stockDto = await _stockRepository.GetAllStocksAsync(pageNumber: querySearch.pageNumber);
-      return Ok(stockDto);
+     var stocks = await _stockService.GetAllStocks(querySearch);
+     return Ok(stocks);
     }
 
     [HttpGet("{id:int}")]

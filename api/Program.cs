@@ -7,6 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 
+
+// 注册处理器
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails(); // 增加标准错误详情支持
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -58,11 +63,15 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddScoped<api.Interface.IStockRepository, api.Repository.StockRepository>();
 builder.Services.AddScoped<api.Interface.ICommentRepository, api.Repository.CommentRepository>();
 builder.Services.AddScoped<api.Interfaces.ITokenService, api.Services.TokenServices>();
+builder.Services.AddScoped<api.Repository.IPortFolioRepository, api.Repository.PortFolioRepository>();
+builder.Services.AddScoped<api.Interfaces.IServices.IStockService, api.Servivces.StockServices>();
 //enable swagger jwt
 builder.Services.AddSwaggerGen(api.Tools.SwaggerTools.EnableSwaggerJwt());
 
 
 var app = builder.Build();
+// Global exception handling
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

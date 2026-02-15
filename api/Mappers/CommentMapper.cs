@@ -1,5 +1,6 @@
 using api.Dtos.Comment;
 using api.models;
+using Microsoft.AspNetCore.Identity;
 
 namespace api.Mappers;
 public static class CommentMapper
@@ -12,7 +13,8 @@ public static class CommentMapper
       Title = comment.Title,
       content = comment.content,
       createdAt = comment.createdAt,
-      stockId = comment.stockId
+      stockId = comment.stockId,
+      AppUserName = comment.AppUser.UserName
     };
   }
 

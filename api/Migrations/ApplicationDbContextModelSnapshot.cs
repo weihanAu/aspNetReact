@@ -51,13 +51,13 @@ namespace api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "dbbfe19c-e243-4bc5-960e-e027dac895e7",
+                            Id = "57e69dda-a0a9-47b5-8c09-b0102dedb663",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "d05e3a7a-f0fc-4b8a-aa96-1383bf7366a4",
+                            Id = "e10ec075-cfd4-4013-bfed-c51bf47cdd18",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -242,6 +242,10 @@ namespace api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -257,6 +261,9 @@ namespace api.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppUserId")
+                        .IsUnique();
 
                     b.HasIndex("stockId");
 
@@ -365,9 +372,17 @@ namespace api.Migrations
 
             modelBuilder.Entity("api.models.Comment", b =>
                 {
+                    b.HasOne("api.models.AppUser", "AppUser")
+                        .WithOne("Comment")
+                        .HasForeignKey("api.models.Comment", "AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("api.models.Stock", "stock")
                         .WithMany("Comments")
                         .HasForeignKey("stockId");
+
+                    b.Navigation("AppUser");
 
                     b.Navigation("stock");
                 });
@@ -393,6 +408,9 @@ namespace api.Migrations
 
             modelBuilder.Entity("api.models.AppUser", b =>
                 {
+                    b.Navigation("Comment")
+                        .IsRequired();
+
                     b.Navigation("Portfolios");
                 });
 

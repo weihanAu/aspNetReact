@@ -7,5 +7,6 @@ namespace api.Dtos.Comment
     public string content { get; set; } = string.Empty;
     public DateTime createdAt { get; set; } = DateTime.Now;
     public int? stockId { get; set; }
+    public string? AppUserName { get; set; }
   }
 }

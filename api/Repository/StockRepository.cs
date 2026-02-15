@@ -70,6 +70,12 @@ public class StockRepository : IStockRepository
     }).Skip(skipNumber).Take(1).ToListAsync();
   }
 
+  public Task<Stock?> GetBySympolAsync(string sympol)
+  {
+    var stock = _context.Stocks.FirstOrDefaultAsync(s => s.Symbol == sympol);
+    return stock;
+  }
+
   public Task<Stock?> GetStockByIdAsync(int id)
   {
     var stock = _context.Stocks.FirstOrDefaultAsync(s => s.Id == id);

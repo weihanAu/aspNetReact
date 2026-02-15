@@ -1,9 +1,12 @@
 using api.data;
 using api.Dtos.Comment;
+using api.Extensions;
 using api.Interface;
 using api.Mappers;
 using api.models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/comment")]
@@ -12,11 +15,14 @@ public class CommentController : ControllerBase
 
     private readonly ICommentRepository _commentRepository;
     private readonly IStockRepository _stockRepository;
-    public CommentController( ICommentRepository commentRepository, IStockRepository stockRepository)
+    private readonly UserManager<AppUser> _userManager;
+    public CommentController( ICommentRepository commentRepository, IStockRepository stockRepository, UserManager<AppUser> userManager)
     {
         _commentRepository = commentRepository;
         _stockRepository = stockRepository;
+        _userManager = userManager;
     }
+
     [HttpGet]
     public async Task<IActionResult> GetAllComments()
     {
@@ -44,6 +50,7 @@ public class CommentController : ControllerBase
     }
 
     [HttpPost("{stockId:int}")]
+    [Authorize]
     public async  Task<IActionResult> AddComment([FromRoute] int stockId, [FromBody] CreateCommentDto commentDto)
     {
         if (!ModelState.IsValid)
@@ -55,11 +62,14 @@ public class CommentController : ControllerBase
         {
             return NotFound($"Stock with ID {stockId} not found.");
         }
+        var userName = User.GetUserName();
+        var AppUser = await _userManager.FindByNameAsync(userName);
         var newComment = new Comment
         {
             Title = commentDto.Title,
             content = commentDto.content,
             stockId = stockId,
+            AppUserId = AppUser.Id
         };
         var comment = await _commentRepository.AddCommentAsync(newComment);
         return CreatedAtAction(nameof(GetCommentsByCommentId), new { commentId = comment.Id }, comment.ToCommentDto());

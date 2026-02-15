@@ -12,5 +12,7 @@ namespace api.models
       public int? stockId { get; set; }
       // Navigation property
       public Stock? stock { get; set; }
+      public string AppUserId { get; set; }= string.Empty;
+      public AppUser AppUser { get; set; }
     }
 }
